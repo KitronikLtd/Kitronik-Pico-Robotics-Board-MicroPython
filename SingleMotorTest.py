@@ -1,10 +1,10 @@
 #SimgleMotorTest.py
 # test code that ramps each moto individually form 0-100-0 then changes direction and does it again then steps onto next motor.
-import robotics
+import PicoRobotics
 import utime
 
 
-board = robotics.KitronikPicoRobotics()
+board = PicoRobotics.KitronikPicoRobotics()
 directions = ["f","r"]
 
 while True:
