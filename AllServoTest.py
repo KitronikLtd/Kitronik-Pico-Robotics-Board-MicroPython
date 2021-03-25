@@ -1,10 +1,10 @@
 #AllServoTest.py
 # test code that ramps each servo from 0-180-0 
-import robotics
+import PicoRobotics
 import utime
 
 
-board = robotics.KitronikPicoRobotics()
+board = PicoRobotics.KitronikPicoRobotics()
 while True:
     for degrees in range(180):
         for servo in range(1,9):
