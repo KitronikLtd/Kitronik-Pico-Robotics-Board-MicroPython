@@ -2,11 +2,11 @@
 # test code that ramps each motor 0-100-0 then changes direction and does it again.
 #all motors run at once, but with staggered timings
 
-import robotics
+import PicoRobotics
 import utime
 
 
-board = robotics.KitronikPicoRobotics()
+board = PicoRobotics.KitronikPicoRobotics()
 directions = ["f","r"]
 
 while True:
