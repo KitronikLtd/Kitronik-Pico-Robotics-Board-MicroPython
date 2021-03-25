@@ -1,7 +1,7 @@
-import robotics
+import PicoRobotics
 import utime
 
-board = robotics.KitronikPicoRobotics()
+board = PicoRobotics.KitronikPicoRobotics()
 directions = ["f","r"]
 
 while True:
