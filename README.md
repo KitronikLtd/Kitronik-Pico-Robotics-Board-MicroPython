@@ -1,6 +1,8 @@
 # Kitronik-Pico-Robotics-Board-MicroPython
 A class and sample code to use the Kitronik Robotics board for Raspberry Pi Pico. (www.kitronik.co.uk/5329)
 
+To use save PicoRobotics.py file onto the Pico so it can be imported
+
 ## Import PicoRobotics.py and construct an instance:
     import PicoRobotics
     board = PicoRobotics.KitronikPicoRobotics()
@@ -12,6 +14,11 @@ where:
 * motor => 1 to 4
 * direction => f or r
 * speed => 0 to 100
+
+## Stop a motor:
+    board.motorOff(motor)
+where:
+* motor => 1 to 4
 
 ## Drive a Servo:
     board.servoWrite(servo, degrees)
