@@ -1,5 +1,5 @@
-#SimgleMotorTest.py
-# test code that ramps each moto individually form 0-100-0 then changes direction and does it again then steps onto next motor.
+#SingleMotorTest.py
+# test code that ramps each motor individually form 0-100-0 then changes direction and does it again then steps onto next motor.
 import PicoRobotics
 import utime
 
