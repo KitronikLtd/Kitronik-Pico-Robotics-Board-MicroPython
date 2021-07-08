@@ -49,6 +49,14 @@ class KitronikPicoRobotics:
     # (degrees x count per degree )+ offset 
 
     def servoWrite(self,servo, degrees):
+        #check the degrees is a reasonable number. we expect 0-180, so cap at those values.
+        if(degrees>180):
+            degrees = 180
+        elif (degrees<0):
+            degrees = 0
+        #check the servo number
+        if((servo<1) or (servo>8)):
+            raise Exception("INVALID SERVO NUMBER") #harsh, but at least you'll know
         calcServo = self.SRV_REG_BASE + ((servo - 1) * self.REG_OFFSET)
         PWMVal = int((degrees*2.2755)+102) # see comment above for maths
         lowByte = PWMVal & 0xFF
