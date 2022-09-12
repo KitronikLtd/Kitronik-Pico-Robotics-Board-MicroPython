@@ -17,15 +17,29 @@ class KitronikPicoRobotics:
     #setup the PCA chip for 50Hz and zero out registers.
     def initPCA(self):
         self.swReset() #make sure we are in a known position
-        #setup the prescale to have 20mS pulse repetition - this is dictated by the servos.
-        self.i2c.writeto_mem(108,0xfe,"\x78")
+
+        # setup the prescale to have 20mS pulse repetition - this is dictated by the servos.
+        # set PWM Frequency Pre Scale.  The prescale value is determined with the formunla:
+        # presscale value = round(osc clock / (4096 * update rate))
+        # Where update rate is the output modulation frequency required.
+        # For example, the output frequency of 50Hz (20ms) for the servo, with the internal oscillator 
+        # clock frequency of 25 Mhz is as follows:
+        # prescale value = round( 25MHZ / (4096 * 50Hz) ) - 1 
+        # prescale value = round (25000000 / (4096 * 50)) - 1 
+        # presscale value = 121 = 79h = 0x79
+        self.i2c.writeto_mem(108,0xfe,"\x79")
+
         #block write outputs to off
         self.i2c.writeto_mem(108,0xfa,"\x00")
         self.i2c.writeto_mem(108,0xfb,"\x00")
         self.i2c.writeto_mem(108,0xfc,"\x00")
         self.i2c.writeto_mem(108,0xfd,"\x00")
-        #come out of sleep
+        # come out of sleep
         self.i2c.writeto_mem(108,0x00,"\x01")
+        # It takes 500uS max for the oscillator to be up and running once the SLEEP bit (bit 4) has
+        # been set to logic 0.  Timings on outputs are not guranteed if the PWM control registers are
+        # accessed within the 500uS window.
+        utime.sleep_us(500)
 
 #useful if you need to read the vaules out - but needs ubinascii to make it nice to read.
     #def readMode1Reg():
@@ -35,7 +49,7 @@ class KitronikPicoRobotics:
      #   print(ubinascii.hexlify(i2c.readfrom_mem(108,0xFE,1)))
         #i2c.readfrom_mem(108,0xFE,1)
     def setPrescaleReg(self):
-        i2c.writeto_mem(108,0xfe,"\x78")
+        i2c.writeto_mem(108,0xfe,"\x79")
 
 
     # To get the PWM pulses to the correct size and zero
@@ -73,6 +87,9 @@ class KitronikPicoRobotics:
             speed = 0
         elif (speed>100):
             speed=100
+
+        if((motor<1) or (motor>4)):
+            raise Exception("INVALID MOTOR NUMBER") # harsh, but at least you'll know
             
         motorReg = self.MOT_REG_BASE + (2 * (motor - 1) * self.REG_OFFSET)
         PWMVal = int(speed * 40.95)
@@ -109,6 +126,9 @@ class KitronikPicoRobotics:
 
     def step(self,motor, direction, steps, speed =20, holdPosition=False):
 
+        if((motor<1) or (motor>2)):
+            raise Exception("INVALID MOTOR NUMBER") # harsh, but at least you'll know
+
         if(direction =="f"):
             directions = ["f", "r"]
             coils = [((motor*2)-1),(motor*2)]
@@ -141,8 +161,8 @@ class KitronikPicoRobotics:
         self.step(motor, direction, steps, speed, holdPosition)
         
 
-    #initialaisation code for using:
-        #defaluts to the standard pins and address for the kitronik board, but could be overridden
+    # initialaisation code for using:
+        #defaults to the standard pins and address for the kitronik board, but could be overridden
     def __init__(self, I2CAddress=108,sda=8,scl=9):
         self.CHIP_ADDRESS = 108
         sda=machine.Pin(sda)
