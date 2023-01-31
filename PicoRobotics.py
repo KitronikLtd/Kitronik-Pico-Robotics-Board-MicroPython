@@ -8,15 +8,13 @@ class KitronikPicoRobotics:
     SRV_REG_BASE = 0x08
     MOT_REG_BASE = 0x28
     REG_OFFSET = 4
-
-    #to perform a software reset on the PCA chip.
-    #Separate from the init function so we can reset at any point if required - useful for development...
-    def swReset(self):
-        self.i2c.writeto(0,"\x06")
+    PRESCALE_VAL = b'\x79'
 
     #setup the PCA chip for 50Hz and zero out registers.
     def initPCA(self):
-        self.swReset() #make sure we are in a known position
+        # Make sure we are in a known position
+        # Soft reset of the I2C chip
+        self.i2c.writeto(0,"\x06")
 
         # setup the prescale to have 20mS pulse repetition - this is dictated by the servos.
         # set PWM Frequency Pre Scale.  The prescale value is determined with the formunla:
@@ -27,30 +25,33 @@ class KitronikPicoRobotics:
         # prescale value = round( 25MHZ / (4096 * 50Hz) ) - 1 
         # prescale value = round (25000000 / (4096 * 50)) - 1 
         # presscale value = 121 = 79h = 0x79
-        self.i2c.writeto_mem(108,0xfe,"\x79")
+        print(self.PRESCALE_VAL, int.from_bytes(self.PRESCALE_VAL,"big"))
+        self.i2c.writeto_mem(108,0xfe,self.PRESCALE_VAL)
 
         #block write outputs to off
         self.i2c.writeto_mem(108,0xfa,"\x00")
         self.i2c.writeto_mem(108,0xfb,"\x00")
         self.i2c.writeto_mem(108,0xfc,"\x00")
         self.i2c.writeto_mem(108,0xfd,"\x00")
+        
         # come out of sleep
         self.i2c.writeto_mem(108,0x00,"\x01")
+        
         # It takes 500uS max for the oscillator to be up and running once the SLEEP bit (bit 4) has
         # been set to logic 0.  Timings on outputs are not guranteed if the PWM control registers are
         # accessed within the 500uS window.
         utime.sleep_us(500)
-
-#useful if you need to read the vaules out - but needs ubinascii to make it nice to read.
-    #def readMode1Reg():
-     #   print(ubinascii.hexlify(i2c.readfrom_mem(108,0,1)))
-
-    #def readPrescaleReg():
-     #   print(ubinascii.hexlify(i2c.readfrom_mem(108,0xFE,1)))
-        #i2c.readfrom_mem(108,0xFE,1)
-    def setPrescaleReg(self):
-        i2c.writeto_mem(108,0xfe,"\x79")
-
+    
+    # Adjusts the servos.
+    # This block should be used if the connected servo does not respond correctly to the 'servoWrite' command.
+    # Try changing the value by small amounts and testing the servo until it correctly sets to the angle.
+    def adjustServos(self, change):
+        if change < -25:
+            change = -25
+        if change > 25:
+            change = 25
+        self.PRESCALE_VAL = (121 + change).to_bytes(1,"big")
+        self.initPCA()
 
     # To get the PWM pulses to the correct size and zero
     # offset these are the default numbers.
@@ -169,4 +170,3 @@ class KitronikPicoRobotics:
         scl=machine.Pin(scl)
         self.i2c=machine.I2C(0,sda=sda, scl=scl, freq=100000)
         self.initPCA()
-         
