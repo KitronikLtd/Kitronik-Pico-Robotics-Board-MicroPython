@@ -25,7 +25,6 @@ class KitronikPicoRobotics:
         # prescale value = round( 25MHZ / (4096 * 50Hz) ) - 1 
         # prescale value = round (25000000 / (4096 * 50)) - 1 
         # presscale value = 121 = 79h = 0x79
-        print(self.PRESCALE_VAL, int.from_bytes(self.PRESCALE_VAL,"big"))
         self.i2c.writeto_mem(108,0xfe,self.PRESCALE_VAL)
 
         #block write outputs to off
