@@ -9,6 +9,7 @@ class KitronikPicoRobotics:
     MOT_REG_BASE = 0x28
     REG_OFFSET = 4
     PRESCALE_VAL = b'\x79'
+    PI_ESTIMATE = 3.1416
 
     #setup the PCA chip for 50Hz and zero out registers.
     def initPCA(self):
@@ -61,7 +62,6 @@ class KitronikPicoRobotics:
     # in the servos Ive examined this is 0.5ms or a count of 102
     #to clauclate the count for the corect pulse is simply:
     # (degrees x count per degree )+ offset 
-
     def servoWrite(self,servo, degrees):
         #check the degrees is a reasonable number. we expect 0-180, so cap at those values.
         if(degrees>180):
@@ -78,6 +78,24 @@ class KitronikPicoRobotics:
         self.i2c.writeto_mem(self.CHIP_ADDRESS, calcServo,bytes([lowByte]))
         self.i2c.writeto_mem(self.CHIP_ADDRESS, calcServo+1,bytes([highByte]))
 
+    # Takes the servo to change and the angle in radians to move to.
+    # 0 radians to 3.1416
+    def servoWriteRadians(self, servo, radians):
+        if servo < 1:
+            servo = 1
+        if servo > 8:
+            servo = 8
+        if radians < 0:
+            radians = 0
+        if radians > self.PI_ESTIMATE:
+            radians = self.PI_ESTIMATE
+        
+        calcServo = self.SRV_REG_BASE + ((servo - 1) * self.REG_OFFSET)
+        PWMVal = int((radians / self.PI_ESTIMATE) * 408) + 102 # See comment above for maths
+        lowByte = PWMVal & 0xFF
+        highByte = (PWMVal >> 8) & 0x01 # Cap high byte at 1 - shoud never be more than 2.5mS
+        self.i2c.writeto_mem(self.CHIP_ADDRESS, calcServo, bytes([lowByte]))
+        self.i2c.writeto_mem(self.CHIP_ADDRESS, calcServo + 1, bytes([highByte]))
 
     #Driving the motor is simpler than the servo - just convert 0-100% to 0-4095 and push it to the correct registers.
     #each motor has 4 writes - low and high bytes for a pair of registers. 

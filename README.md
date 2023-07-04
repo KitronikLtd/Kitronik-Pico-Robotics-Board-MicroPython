@@ -41,6 +41,13 @@ where:
 * __servo__ => 1 to 8
 * __degrees__ => 0-180
 
+``` python
+board.servoWriteRadians(servo, radians)
+```
+where:
+* __servo__ => 1 to 8
+* __radians__ => 0 to 3.1416 (Pi to four digits)
+
 ## Drive a Stepper:
 ``` python
 board.step(stepperMotor,direction,steps)
