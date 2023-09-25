@@ -182,7 +182,7 @@ class KitronikPicoRobotics:
     # initialaisation code for using:
         #defaults to the standard pins and address for the kitronik board, but could be overridden
     def __init__(self, I2CAddress=108,sda=8,scl=9):
-        self.CHIP_ADDRESS = 108
+        self.CHIP_ADDRESS = I2CAddress
         sda=machine.Pin(sda)
         scl=machine.Pin(scl)
         self.i2c=machine.I2C(0,sda=sda, scl=scl, freq=100000)
