@@ -8,7 +8,7 @@ A class and sample code to use the Kitronik Robotics board for Raspberry Pi Pico
 
 This is the microPython version. For CircuitPython see: https://github.com/KitronikLtd/Kitronik-Pico-Robotics-Board-CircuitPython
 
-To use save `PicoRobotics.py` file onto the Pico so it can be imported
+To use this library, save the file `PicoRobotics.py` file onto the Pico so Python can import it.
 
 ## Import the library and construct an instance:
 ``` python
@@ -71,7 +71,7 @@ There are defaulted parameters for stepper speeds (default 20mS pause between st
 
 # Troubleshooting
 
-If the code is run without the Pico Robotics board connected, or  if the board is not powered up it islikely that it will throw an OS Error (usually OS Error 5).
+If the code is run without the Pico Robotics board connected, or  if the board is not powered up it is likely that it will throw an OS Error (usually OS Error 5).
 This is because it tries to communicate with an I2C device which is not responding.
 
 This code is designed to be used as a module. See: https://kitronik.co.uk/blogs/resources/modules-micro-python-and-the-raspberry-pi-pico for more information
