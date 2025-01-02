@@ -23,7 +23,7 @@ board.motorOn(motor, direction, speed)
 ```
 where:
 * __motor__ => 1 to 4
-* __direction__ => f or r
+* __direction__ => "f" or "r" (in quotes)
 * __speed__ => 0 to 100
 
 ## Stop a motor:
@@ -54,7 +54,7 @@ board.step(stepperMotor,direction,steps)
 ```
 where:
 * __stepperMotor__ => 1 or 2 (stepper 1 is DC motors 1 and 2, stepper 2 is DC motors 3 and 4)
-* __direction__ => f or r
+* __direction__ => "f" or "r" (in quotes)
 * __steps__ => how many steps to make
 
 ### To step an angle:
@@ -63,7 +63,7 @@ board.stepAngle(stepperMotor, direction, angle)
 ```
 where
 * __stepperMotor__ => 1 or 2 (stepper 1 is DC motors 1 and 2, stepper 2 is DC motors 3 and 4)
-* __direction__ => f or r
+* __direction__ => "f" or "r" (in quotes)
 * __angle__ => how many degrees to move
 
 The stepper code assumes 200 steps per rev (1.8 degrees resolution) and only does full steps.
